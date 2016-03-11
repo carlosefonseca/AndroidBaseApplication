@@ -2,18 +2,16 @@ package co.base.androidbaseapplication.ui.details;
 
 import javax.inject.Inject;
 
-import co.base.androidbaseapplication.data.DataManager;
 import co.base.androidbaseapplication.ui.base.BasePresenter;
 import rx.Subscription;
 
 public class CountryDetailPresenter extends BasePresenter<CountryDetailMvpView> {
 
-    private final DataManager mDataManager;
     private Subscription mSubscription;
 
     @Inject
-    public CountryDetailPresenter(DataManager dataManager) {
-        mDataManager = dataManager;
+    public CountryDetailPresenter() {
+
     }
 
     @Override

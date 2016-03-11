@@ -4,23 +4,21 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import co.base.androidbaseapplication.data.DataManager;
-import co.base.androidbaseapplication.data.model.Country;
+import co.base.androidbaseapplication.domain.GetCountriesUsecase;
+import co.base.androidbaseapplication.model.entities.Country;
 import co.base.androidbaseapplication.ui.base.BasePresenter;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class MainPresenter extends BasePresenter<MainMvpView> {
 
-    private final DataManager mDataManager;
+    private final GetCountriesUsecase mCountriesUsecase;
     private Subscription mSubscription;
 
     @Inject
-    public MainPresenter(DataManager dataManager) {
-        mDataManager = dataManager;
+    public MainPresenter(GetCountriesUsecase countriesUsecase) {
+        mCountriesUsecase = countriesUsecase;
     }
 
     @Override
@@ -36,9 +34,7 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
 
     public void loadCountries() {
         checkViewAttached();
-        mSubscription = mDataManager.getCountries()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
+        mSubscription = mCountriesUsecase.execute()
                 .subscribe(new Subscriber<List<Country>>() {
                     @Override
                     public void onCompleted() {
@@ -46,7 +42,7 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
 
                     @Override
                     public void onError(Throwable e) {
-                        Timber.e(e, "There was an error loading the ribots.");
+                        Timber.e(e, "There was an error loading the countries.");
                         getMvpView().showError();
                     }
 

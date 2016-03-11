@@ -1,4 +1,4 @@
-package co.base.androidbaseapplication.data;
+package co.base.androidbaseapplication.events;
 
 public enum Events {
     SYNC_COMPLETED {

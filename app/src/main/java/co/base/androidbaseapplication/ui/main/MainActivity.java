@@ -18,14 +18,15 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import co.base.androidbaseapplication.Config;
 import co.base.androidbaseapplication.R;
-import co.base.androidbaseapplication.data.Events;
+import co.base.androidbaseapplication.events.Events;
 import co.base.androidbaseapplication.services.SyncService;
-import co.base.androidbaseapplication.data.model.Country;
+import co.base.androidbaseapplication.model.entities.Country;
 import co.base.androidbaseapplication.ui.base.BaseActivity;
 import co.base.androidbaseapplication.ui.details.CountryDetailActivity;
 import co.base.androidbaseapplication.util.DialogFactory;
-
+import co.base.androidbaseapplication.util.PreferencesUtil;
 
 public class MainActivity extends BaseActivity implements MainMvpView {
 
@@ -34,6 +35,7 @@ public class MainActivity extends BaseActivity implements MainMvpView {
 
     @Inject MainPresenter mMainPresenter;
     @Inject CountriesAdapter mCountriesAdapter;
+    @Inject PreferencesUtil mPreferencesUtil;
 
     @Bind(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -73,7 +75,12 @@ public class MainActivity extends BaseActivity implements MainMvpView {
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter(Events.SYNC_COMPLETED.toString()));
 
-        if (getIntent().getBooleanExtra(EXTRA_TRIGGER_SYNC_FLAG, true)) {
+        long currentTime = System.currentTimeMillis();
+        long lastUpdateTime = mPreferencesUtil.getLastSyncTimestamp();
+
+        boolean expired = ((currentTime - lastUpdateTime) > Config.EXPIRATION_TIME);
+
+        if (expired) {
             startService(SyncService.getStartIntent(this));
         }
     }

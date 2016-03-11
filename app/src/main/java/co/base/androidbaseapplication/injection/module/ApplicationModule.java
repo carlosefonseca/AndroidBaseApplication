@@ -3,18 +3,15 @@ package co.base.androidbaseapplication.injection.module;
 import android.app.Application;
 import android.content.Context;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
+import javax.inject.Named;
 import javax.inject.Singleton;
 
-import co.base.androidbaseapplication.data.remote.CountriesService;
 import co.base.androidbaseapplication.injection.ApplicationContext;
+import co.base.androidbaseapplication.model.local.CountryDataStore;
+import co.base.androidbaseapplication.model.repository.CountryRepository;
+import co.base.androidbaseapplication.model.rest.RestDataSource;
 import dagger.Module;
 import dagger.Provides;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Provide application-level dependencies.
@@ -40,15 +37,15 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    CountriesService provideCountriesService() {
-        Gson gson = new GsonBuilder()
-                .create();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(CountriesService.ENDPOINT)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .build();
-        return retrofit.create(CountriesService.class);
+    @Named("remote_repository")
+    CountryRepository provideRemoteDataRepository(RestDataSource restDataSource) {
+        return restDataSource;
     }
 
+    @Provides
+    @Singleton
+    @Named("local_repository")
+    CountryRepository provideLocalDataRepository(CountryDataStore localDataSource) {
+        return localDataSource;
+    }
 }

@@ -3,14 +3,13 @@ package co.base.androidbaseapplication.injection.component;
 import android.app.Application;
 import android.content.Context;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
-import co.base.androidbaseapplication.data.DataManager;
-import co.base.androidbaseapplication.data.local.EventPosterHelper;
+import co.base.androidbaseapplication.events.EventPosterHelper;
+import co.base.androidbaseapplication.model.repository.CountryRepository;
 import co.base.androidbaseapplication.services.SyncService;
-import co.base.androidbaseapplication.data.local.DatabaseHelper;
-import co.base.androidbaseapplication.data.local.PreferencesHelper;
-import co.base.androidbaseapplication.data.remote.CountriesService;
+import co.base.androidbaseapplication.util.PreferencesUtil;
 import co.base.androidbaseapplication.injection.ApplicationContext;
 import co.base.androidbaseapplication.injection.module.ApplicationModule;
 import dagger.Component;
@@ -23,10 +22,9 @@ public interface ApplicationComponent {
 
     @ApplicationContext Context context();
     Application application();
-    CountriesService ribotsService();
-    PreferencesHelper preferencesHelper();
-    DatabaseHelper databaseHelper();
+    @Named("remote_repository") CountryRepository restDataRepository();
+    @Named("local_repository") CountryRepository localDataRepository();
+    PreferencesUtil preferencesHelper();
     EventPosterHelper eventPosterHelper();
-    DataManager dataManager();
 
 }

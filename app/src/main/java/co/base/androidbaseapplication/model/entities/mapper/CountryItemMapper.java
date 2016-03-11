@@ -1,15 +1,15 @@
-package co.base.androidbaseapplication.data.model.mapper;
+package co.base.androidbaseapplication.model.entities.mapper;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import co.base.androidbaseapplication.data.model.Country;
-import co.base.androidbaseapplication.data.model.rest.CountryItemResponse;
+import co.base.androidbaseapplication.model.entities.Country;
+import co.base.androidbaseapplication.model.entities.rest.CountryItemResponse;
 
 public class CountryItemMapper {
 
-    public static Collection<Country> transform(Collection<CountryItemResponse> countries) {
+    public static List<Country> transform(Collection<CountryItemResponse> countries) {
         List<Country> countriesList = new ArrayList<>();
         for (CountryItemResponse country : countries) {
             Country countryItem = transform(country);

@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.base.androidbaseapplication.R;
-import co.base.androidbaseapplication.data.model.Country;
+import co.base.androidbaseapplication.model.entities.Country;
 
 public class CountriesAdapter extends RecyclerView.Adapter<CountriesAdapter.CountryViewHolder> {
 
@@ -58,13 +58,15 @@ public class CountriesAdapter extends RecyclerView.Adapter<CountriesAdapter.Coun
     }
 
     @Override
-    public void onBindViewHolder(CountryViewHolder holder, int position) {
+    public void onBindViewHolder(final CountryViewHolder holder, int position) {
         final Country country = mCountries.get(position);
         holder.nameTextView.setText(country.getmCountryName());
         Picasso.with(holder.itemView.getContext())
                 .load("http://www.geognos.com/api/en/countries/flag/"
                         + country.getmCountryCode() + ".png")
+                //.error(R.drawable.__leak_canary_icon)
                 .into(holder.flagView);
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

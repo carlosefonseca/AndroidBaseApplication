@@ -1,4 +1,4 @@
-package co.base.androidbaseapplication.data.model.rest;
+package co.base.androidbaseapplication.model.entities.rest;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

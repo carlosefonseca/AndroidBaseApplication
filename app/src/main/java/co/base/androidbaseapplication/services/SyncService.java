@@ -7,22 +7,23 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.IBinder;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import co.base.androidbaseapplication.AndroidBaseApplication;
-import co.base.androidbaseapplication.data.DataManager;
-import co.base.androidbaseapplication.data.model.Country;
-import co.base.androidbaseapplication.util.AndroidComponentUtil;
+import co.base.androidbaseapplication.domain.SyncCountriesUsecase;
+import co.base.androidbaseapplication.model.entities.Country;
 import co.base.androidbaseapplication.util.NetworkUtil;
+import co.base.androidbaseapplication.util.PreferencesUtil;
 import rx.Observer;
 import rx.Subscription;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class SyncService extends Service {
 
-    @Inject
-    DataManager mDataManager;
+    @Inject SyncCountriesUsecase mSyncCountriesUsecase;
+    @Inject PreferencesUtil mPreferencesUtil;
     private Subscription mSubscription;
 
     public static Intent getStartIntent(Context context) {
@@ -41,7 +42,6 @@ public class SyncService extends Service {
 
         if (!NetworkUtil.isNetworkConnected(this)) {
             Timber.i("Sync canceled, connection not available");
-            AndroidComponentUtil.toggleComponent(this, SyncOnConnectionAvailable.class, true);
             stopSelf(startId);
             return START_NOT_STICKY;
         }
@@ -49,12 +49,13 @@ public class SyncService extends Service {
         if (mSubscription != null && !mSubscription.isUnsubscribed())
             mSubscription.unsubscribe();
 
-        mSubscription = mDataManager.syncCountries()
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<Country>() {
+        mSubscription = mSyncCountriesUsecase.execute()
+                .subscribe(new Observer<List<Country>>() {
                     @Override
                     public void onCompleted() {
                         Timber.i("Synced successfully!");
+                        long syncTimeStamp = System.currentTimeMillis();
+                        mPreferencesUtil.setLastSyncTimestamp(syncTimeStamp);
                         stopSelf(startId);
                     }
 
@@ -66,7 +67,7 @@ public class SyncService extends Service {
                     }
 
                     @Override
-                    public void onNext(Country country) {
+                    public void onNext(List<Country> countries) {
                     }
                 });
 
@@ -92,7 +93,6 @@ public class SyncService extends Service {
             if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)
                     && NetworkUtil.isNetworkConnected(context)) {
                 Timber.i("Connection is now available, triggering sync...");
-                AndroidComponentUtil.toggleComponent(context, this.getClass(), false);
                 context.startService(getStartIntent(context));
             }
         }

@@ -1,4 +1,4 @@
-package co.base.androidbaseapplication.data.model;
+package co.base.androidbaseapplication.model.entities;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Required;
